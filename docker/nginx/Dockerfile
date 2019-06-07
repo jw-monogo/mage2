@@ -5,8 +5,8 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/*
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-ADD nginx.conf /etc/nginx/
-ADD symfony.conf /etc/nginx/conf.d/
+ADD docker/nginx/nginx.conf /etc/nginx/
+ADD docker/nginx/symfony.conf /etc/nginx/conf.d/
 
 RUN adduser -D -g '' -G www-data www-data
 
