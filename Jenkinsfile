@@ -17,7 +17,7 @@ node {
     }
     stage('Docker deploy'){
       sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_backend_php -d --rm lv_uk_dev/backend_php'
-      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_backend_nginx -d --rm lv_uk_dev/backend_nginx'
+      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_backend_nginx -e VIRTUAL_HOST=logicvapes-uk-backend-dev.monogo.dev -e CERT_NAME=default -d --rm lv_uk_dev/backend_nginx'
 
     }
   }
