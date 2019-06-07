@@ -46,6 +46,11 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
     apk del tzdata && \
     date
 
+RUN mkdir /code
+ADD . /code
+
+RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
+
 COPY docker/php/www.pool.conf /etc/php7/php-fpm.d/
 COPY docker/php/memory.ini /etc/php7/conf.d/
 CMD ["php-fpm7", "-F"]

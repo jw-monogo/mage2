@@ -10,6 +10,11 @@ ADD docker/nginx/symfony.conf /etc/nginx/conf.d/
 
 RUN adduser -D -g '' -G www-data www-data
 
+RUN mkdir /code
+ADD . /code
+
+RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
+
 CMD ["nginx"]
 
 EXPOSE 80
