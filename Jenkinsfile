@@ -13,7 +13,7 @@ node {
       sh 'docker build -t lv_uk_dev/frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
     stage('Docker deploy'){
-      sh 'docker run --rm lv_uk_dev/frontend_nginx --restart=unless-stopped --network=logicvapes-uk-dev'
+      sh 'docker run --rm --restart=unless-stopped --network=logicvapes-uk-dev lv_uk_dev/frontend_nginx'
 
     }
   }
