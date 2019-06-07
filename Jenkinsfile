@@ -10,7 +10,7 @@ node {
       sh 'printenv'
     }
     stage('Build Docker nginx'){
-     sh 'docker build -t lv_uk_dev_frontend_nginx -f /mnt/storage/containers/logicvapes/uk/dev/backend/nginx/Dockerfile --no-cache .'
+     sh 'docker build -t lv_uk_dev_frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
     stage('Docker test'){
       sh 'docker run --rm react-test'
