@@ -10,20 +10,11 @@ node {
       sh 'printenv'
     }
     stage('Build Docker nginx'){
-     sh 'docker build -t lv_uk_dev_frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
+      sh 'docker build -t lv_uk_dev/frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
-    stage('Docker test'){
-      sh 'docker run --rm react-test'
-    }
-    stage('Clean Docker test'){
-      sh 'docker rmi react-test'
-    }
-    stage('Deploy'){
-      if(env.BRANCH_NAME == 'master'){
-        sh 'docker build -t react-app --no-cache .'
-        sh 'docker push localhost:5000/react-app'
-        sh 'docker rmi -f react-app localhost:5000/react-app'
-      }
+    stage('Docker deploy'){
+      sh 'docker run --rm lv_uk_dev/frontend_nginx --restart unless-stopped --network=logicvapes-uk-dev'
+
     }
   }
   catch (err) {
