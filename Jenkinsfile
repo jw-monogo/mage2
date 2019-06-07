@@ -10,14 +10,14 @@ node {
       sh 'printenv'
     }
     stage('Build Docker php'){
-      sh 'docker build -t lv_uk_dev/frontend_php -f docker/php/Dockerfile --no-cache .'
+      sh 'docker build -t lv_uk_dev/backend_php -f docker/php/Dockerfile --no-cache .'
     }
     stage('Build Docker nginx'){
-      sh 'docker build -t lv_uk_dev/frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
+      sh 'docker build -t lv_uk_dev/backend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
     stage('Docker deploy'){
-      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_php -d --rm lv_uk_dev/frontend_php'
-      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_nginx -d --rm lv_uk_dev/frontend_nginx'
+      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_backend_php -d --rm lv_uk_dev/backend_php'
+      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_backend_nginx -d --rm lv_uk_dev/backend_nginx'
 
     }
   }
