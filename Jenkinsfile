@@ -9,7 +9,7 @@ node {
       sh 'docker -v'
       sh 'printenv'
     }
-    stage('Build Docker nginx'){
+    stage('Build Docker php'){
       sh 'docker build -t lv_uk_dev/frontend_php -f docker/php/Dockerfile --no-cache .'
     }
     stage('Build Docker nginx'){
