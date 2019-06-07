@@ -16,8 +16,8 @@ node {
       sh 'docker build -t lv_uk_dev/frontend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
     stage('Docker deploy'){
-      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_php --rm lv_uk_dev/frontend_php'
-      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_nginx --rm lv_uk_dev/frontend_nginx'
+      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_php -d --rm lv_uk_dev/frontend_php'
+      sh 'docker run --network=logicvapes-uk-dev --name=lv_uk_dev_frontend_nginx -d --rm lv_uk_dev/frontend_nginx'
 
     }
   }
