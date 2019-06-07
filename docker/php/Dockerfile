@@ -46,8 +46,8 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
     apk del tzdata && \
     date
 
-COPY docker/nginx/www.pool.conf /etc/php7/php-fpm.d/
-COPY docker/nginx/memory.ini /etc/php7/conf.d/
+COPY docker/php/www.pool.conf /etc/php7/php-fpm.d/
+COPY docker/php/memory.ini /etc/php7/conf.d/
 CMD ["php-fpm7", "-F"]
 
 WORKDIR /code
