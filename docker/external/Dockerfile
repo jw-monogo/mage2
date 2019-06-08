@@ -60,12 +60,12 @@ ADD docker/external/nginx.conf /etc/nginx/
 ADD docker/external/magento.conf /etc/nginx/conf.d/
 
 RUN adduser -D -g '' -G www-data www-data
-
+RUN chown www-data:www-data /code/* -R
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
 
 WORKDIR /code
-EXPOSE 9001
+EXPOSE 80
 
 CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
