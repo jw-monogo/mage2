@@ -23,5 +23,5 @@ pipeline {
               sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose up -d --build -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml'
         }
     }
-  }
 }
+
