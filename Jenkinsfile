@@ -14,7 +14,7 @@ pipeline {
                 ).trim()
             }
             steps {
-                echo "${TAG}"
+                echo "${env.TAG}"
             }
         }
         stage('Build Docker php'){
