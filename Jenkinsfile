@@ -4,8 +4,6 @@ pipeline {
         stage("Checkout"){
             steps {
                 checkout scm
-                sh 'export TEST=$(echo test)'
-                sh 'echo $TEST'
                 echo "The head is on: ${GIT_COMMIT}"
             }
         }
@@ -89,7 +87,7 @@ def composer_vendor_cache_file_name() {
 def composer_cache_file_exists() {
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$COMPOSER_CACHE_FILE" && echo true || echo false', returnStdout: true).trim()
+            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$(echo $COMPOSER_CACHE_FILE)" && echo true || echo false', returnStdout: true).trim()
         }
     }
 }
