@@ -1,5 +1,5 @@
 FROM alpine:3.7
-
+LABEL maintainer="Jakub Wójtowicz<jakub.wojtowicz@monogo.pl>"
 RUN apk add --update \
     php7-fpm \
     php7-apcu \
