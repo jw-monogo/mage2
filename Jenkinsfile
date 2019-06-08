@@ -4,8 +4,8 @@ node {
       checkout scm
     }
     stage('Environment') {
-      sh "echo Used image tag: $(git log -1 --pretty=%!H(MISSING)"
-      sh 'export IMG_NAME=$(git log -1 --pretty=%!H(MISSING)'
+      sh "echo Used image tag: $(git log -1 --pretty=%h)"
+      sh 'export IMG_NAME=$(git log -1 --pretty=%h)'
       sh '$IMG_NAME'
       sh 'printenv'
     }
