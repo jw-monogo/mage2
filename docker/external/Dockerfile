@@ -34,6 +34,7 @@ RUN apk add --update \
     php7-calendar \
     php7-xdebug \
     make \
+    nginx \
     curl \
     tzdata \
     supervisor
