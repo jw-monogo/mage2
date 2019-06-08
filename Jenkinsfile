@@ -26,6 +26,7 @@ pipeline {
                            sh 'scp -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
                            sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
                         }
+                        sh 'rm $COMPOSER_VENDOR_CACHE_FILE && rm $COMPOSER_CACHE_FILE'
                     }
                     else {
                         echo 'Vendor cache found, downloading...'
