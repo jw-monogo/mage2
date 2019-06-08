@@ -47,7 +47,7 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
     date
 
 RUN mkdir /code
-ADD . /code
+COPY . /code
 
 RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
 
