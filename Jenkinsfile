@@ -16,7 +16,10 @@ node {
       sh 'docker build -t lv_uk_dev/backend_nginx -f docker/nginx/Dockerfile --no-cache .'
     }
     stage('Docker deploy'){
-      sh 'ssh $SSH_TESLA_HOST ls -l /'
+        sshagent(credentials : ['ssh-monogo-tesla']) {
+            sh 'ssh $SSH_TESLA_HOST ls -l /'
+        }
+
     }
   }
   catch (err) {
