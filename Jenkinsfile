@@ -47,9 +47,6 @@ pipeline {
                 DOCKERFILE_URL = "docker/php/Dockerfile"
             }
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                   sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
-                }
                 echo "Used docker image name: $DOCKER_IMAGE:$GIT_COMMIT"
                 sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f $DOCKERFILE_URL --no-cache .'
                 echo "Tagging image as latest: $DOCKER_IMAGE:latest"
