@@ -21,7 +21,6 @@ pipeline {
                         sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
                         sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ./vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                           sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$(echo $COMPOSER_CACHE_FILE)" && echo true || echo false'
                            sh 'scp -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
                            sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
                         }
@@ -30,7 +29,7 @@ pipeline {
                     else {
                         echo 'Vendor cache found, downloading...'
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                            sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/ .'
+                            sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
                         }
                         sh 'mkdir vendor'
                         sh 'tar -zxf --strip=1 $COMPOSER_VENDOR_CACHE_FILE -C vendor'
