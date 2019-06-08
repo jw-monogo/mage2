@@ -1,13 +1,13 @@
-node {
-  try {
+pipeline {
+    agent any;
     stage('Checkout') {
       checkout scm
     }
     environment {
-    TAG = sh (
-      returnStdout: true,
-      script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
-    ).trim()
+        TAG = sh (
+          returnStdout: true,
+          script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
+        ).trim()
     }
     stage('Environment') {
       echo "Deploying to Prod ${TAG}"
@@ -23,8 +23,5 @@ node {
               sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose up -d --build -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml'
         }
     }
-  }
-  catch (err) {
-    throw err
   }
 }
