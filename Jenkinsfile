@@ -34,7 +34,6 @@ pipeline {
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
                             sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
                         }
-                        sh 'mkdir vendor'
                         sh 'tar -zxf --strip=1 $COMPOSER_VENDOR_CACHE_FILE -C vendor'
                         sh 'rm $COMPOSER_VENDOR_CACHE_FILE'
                     }
