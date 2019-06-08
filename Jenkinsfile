@@ -12,12 +12,13 @@ pipeline {
         stage('Build PHP container'){
             environment {
                 COMPOSER_CACHE_FILE = composer_cache_file()
-                COMPOSER_CACHE_FOUND = sh(script: 'echo $(test -f "composer.lock" && echo true || echo false )', , returnStdout: true).trim()
+                COMPOSER_CACHE_FOUND = composer_cache_file_exists()
                 DOCKER_IMAGE = "lv_uk_dev/backend_php"
                 DOCKERFILE_URL = "docker/php/Dockerfile"
             }
             steps {
                 echo '$COMPOSER_CACHE_FILE'
+                echo '$COMPOSER_CACHE_FOUND'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
                    sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
                 }
@@ -37,11 +38,20 @@ pipeline {
     }
 }
 
-def composer_cache_file() {
+def composer_cache_file_name() {
 
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
             return sh(script : 'ssh $SSH_TESLA_HOST -i $SSH_KEY echo "test"', returnStdout: true).trim()
+        }
+    }
+}
+
+def composer_cache_file_exists() {
+
+    script {
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/composer-logicvapes_uk_dev_backend-$COMPOSER_CACHE_FILE.tar.gz" && echo true || echo false', , returnStdout: true).trim()
         }
     }
 }
