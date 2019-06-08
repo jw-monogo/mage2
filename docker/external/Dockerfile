@@ -61,8 +61,7 @@ ADD docker/external/magento.conf /etc/nginx/conf.d/
 
 RUN adduser -D -g '' -G www-data www-data
 
-RUN cd /code
-RUN find app/code var/view_preprocessed vendor pub/static app/etc generated/code generated/metadata \( -type f -or -type d \) -exec chmod u-w {} + && chmod o-rwx app/etc/env.php && chmod u+x bin/magento
+RUN find /code/app/code /code/var/view_preprocessed /code/vendor /code/pub/static /code/app/etc /code/generated/code /code/generated/metadata \( -type f -or -type d \) -exec chmod u-w {} + && chmod o-rwx app/etc/env.php && chmod u+x bin/magento
 RUN php bin/magento deploy:mode:set production
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
