@@ -13,7 +13,6 @@ RUN adduser -D -g '' -G www-data www-data
 RUN mkdir /code
 COPY . /code
 
-
 RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
 
 CMD ["nginx"]
