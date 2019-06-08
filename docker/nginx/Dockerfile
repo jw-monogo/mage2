@@ -12,6 +12,8 @@ RUN adduser -D -g '' -G www-data www-data
 
 RUN mkdir /code
 ADD . /code
+RUN composer install --no-interaction --no-suggest --ignore-platform-reqs
+
 
 RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
 

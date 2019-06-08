@@ -4,16 +4,20 @@ pipeline {
         stage("Checkout"){
             steps {
                 checkout scm
-                echo "Recent commit is: ${GIT_COMMIT}"
+                sh 'cp * docker -r'
+                sh 'rm -rf docker/docker'
+                sh 'export TEST=$(echo test)'
+                echo "The head is on: ${GIT_COMMIT}"
             }
         }
         stage('Build PHP container'){
             environment {
                 DOCKER_IMAGE = "lv_uk_dev/backend_php"
+                DOCKERFILE_URL = "docker/php/Dockerfile"
             }
             steps {
                 echo "Used docker image name: $DOCKER_IMAGE:$GIT_COMMIT"
-                sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f docker/php/Dockerfile --no-cache .'
+                sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f $DOCKERFILE_URL --no-cache .'
                 echo "Tagging image as latest: $DOCKER_IMAGE:latest"
                 sh 'docker tag $DOCKER_IMAGE:$GIT_COMMIT $DOCKER_IMAGE:latest'
             }
