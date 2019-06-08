@@ -7,11 +7,8 @@ pipeline {
             }
         }
         stage("Setenv"){
-            environment {
-                TAG = sh "echo $(git log -1 --pretty=%h)"
-            }
             steps {
-                echo "${env.TAG}"
+                echo "${GIT_COMMIT}"
             }
         }
         stage('Build Docker php'){
