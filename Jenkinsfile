@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         COMPOSER_CACHE_FILE = composer_cache_file_name()
+        COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
     }
     stages {
         stage("Checkout"){
@@ -12,8 +13,6 @@ pipeline {
         }
         stage("Build Vendor"){
             environment {
-                COMPOSER_CACHE_FILE = composer_cache_file_name()
-                COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
                 COMPOSER_CACHE_FOUND = composer_cache_file_exists()
             }
             steps {
@@ -42,8 +41,6 @@ pipeline {
         }
         stage('Build PHP container'){
             environment {
-                COMPOSER_CACHE_FILE = composer_cache_file_name()
-                COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
                 COMPOSER_CACHE_FOUND = composer_cache_file_exists()
                 DOCKER_IMAGE = "lv_uk_dev/backend_php"
                 DOCKERFILE_URL = "docker/php/Dockerfile"
