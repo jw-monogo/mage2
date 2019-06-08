@@ -36,14 +36,7 @@ pipeline {
     }
 }
 
-
 def composer_cache_file() {
-    script {
-        return sh(script : 'uname -m', returnStdout: true).trim()
-    }
-}
-
-def arch_prefix() {
 
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
