@@ -17,8 +17,8 @@ pipeline {
                 DOCKERFILE_URL = "docker/php/Dockerfile"
             }
             steps {
-                echo $COMPOSER_CACHE_FILE
-                echo $COMPOSER_CACHE_FOUND
+                sh 'echo $COMPOSER_CACHE_FILE'
+                sh 'echo $COMPOSER_CACHE_FOUND'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
                    sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
                 }
@@ -48,10 +48,9 @@ def composer_cache_file_name() {
 }
 
 def composer_cache_file_exists() {
-
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$COMPOSER_CACHE_FILE" && echo true || echo false', , returnStdout: true).trim()
+            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$COMPOSER_CACHE_FILE" && echo true || echo false', returnStdout: true).trim()
         }
     }
 }
