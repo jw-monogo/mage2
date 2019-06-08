@@ -4,15 +4,17 @@ node {
       checkout scm
     }
     stage('Environment') {
-      sh 'git --version'
-      echo "Branch: ${env.BRANCH_NAME}"
-      sh 'docker -v'
+      echo "Used image tag: $(git log -1 --pretty=%!H(MISSING)"
+      sh 'export IMG_NAME=$(git log -1 --pretty=%!H(MISSING)'
+      sh '$IMG_NAME'
       sh 'printenv'
     }
-
+    stage('Build Docker php'){
+      sh 'docker build -t lv_uk_dev/backend_php -f docker/php/Dockerfile --no-cache .'
+    }
     stage('Docker deploy'){
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-              sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY ls -l / '
+              sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose up -d --build -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml'
         }
     }
   }
