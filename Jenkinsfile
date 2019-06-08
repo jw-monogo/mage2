@@ -12,8 +12,9 @@ pipeline {
                 DOCKER_IMAGE = "lv_uk_dev/backend_php"
             }
             steps {
-                sh 'docker build -t ${env.DOCKER_IMAGE}:$GIT_COMMIT -f docker/php/Dockerfile --no-cache .'
-                sh 'docker tag ${env.DOCKER_IMAGE}:$GIT_COMMIT ${env.DOCKER_IMAGE}:latest'
+                echo "Used docker image name: ${GIT_COMMIT}:$GIT_COMMIT"
+                sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f docker/php/Dockerfile --no-cache .'
+                sh 'docker tag $DOCKER_IMAGE:$GIT_COMMIT $DOCKER_IMAGE:latest'
             }
         }
         stage('Docker deploy'){
