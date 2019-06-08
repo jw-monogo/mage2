@@ -63,7 +63,6 @@ RUN adduser -D -g '' -G www-data www-data
 
 RUN chmod u-w /code/var -R
 #RUN find /code/app/code /code/var/view_preprocessed /code/vendor /code/pub/static /code/app/etc /code/generated/code /code/generated/metadata \( -type f -or -type d \) -exec chmod u-w {} + && chmod o-rwx app/etc/env.php && chmod u+x bin/magento
-RUN php /code/bin/magento deploy:mode:set production
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
