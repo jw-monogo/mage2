@@ -66,7 +66,7 @@ pipeline {
         }
         stage('Cleanup'){
             steps {
-                sh 'docker images prune --all --force'
+                sh 'docker system prune --all --force'
             }
         }
     }
