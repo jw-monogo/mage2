@@ -34,7 +34,7 @@ pipeline {
                             sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
                         }
                         sh 'mkdir -p vendor'
-                        sh 'tar -zxf --strip=1 $COMPOSER_VENDOR_CACHE_FILE -C vendor'
+                        sh 'tar --strip=1 -zxf $COMPOSER_VENDOR_CACHE_FILE -C vendor'
                         sh 'rm $COMPOSER_VENDOR_CACHE_FILE'
                     }
                 }
