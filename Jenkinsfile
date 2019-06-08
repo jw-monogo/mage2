@@ -74,6 +74,11 @@ pipeline {
                 }
             }
         }
+        stage('Cleanup'){
+            steps {
+                sh 'docker images prune -af'
+            }
+        }
     }
 }
 
