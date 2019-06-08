@@ -1,29 +1,33 @@
 pipeline {
-    agent any;
-    environment {
-        TAG = sh (
-          returnStdout: true,
-          script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
-        ).trim()
-    }
+    agent any
     stages {
-        stage('Checkout') {
-          checkout scm
+        stage("Checkout"){
+            steps {
+                checkout scm
+            }
         }
-        stage('Environment') {
-              echo "Deploying to Prod ${TAG}"
-              sh 'export IMG_NAME=$(git log -1 --pretty=%h)'
-              sh '$IMG_NAME'
-              sh 'printenv'
+        stage("Checkout"){
+            environment {
+                TAG = sh (
+                  returnStdout: true,
+                  script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
+                ).trim()
+            }
+            steps {
+                echo ${TAG}
+            }
         }
         stage('Build Docker php'){
-          sh 'docker build -t lv_uk_dev/backend_php -f docker/php/Dockerfile --no-cache .'
+            steps {
+                sh 'docker build -t lv_uk_dev/backend_php -f docker/php/Dockerfile --no-cache .'
+            }
         }
         stage('Docker deploy'){
-            withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                  sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose up -d --build -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml'
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+                      sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose up -d --build -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml'
+                }
             }
         }
     }
 }
-
