@@ -4,9 +4,8 @@ pipeline {
         stage("Checkout"){
             steps {
                 checkout scm
-                sh 'cp * docker -r'
-                sh 'rm -rf docker/docker'
                 sh 'export TEST=$(echo test)'
+                sh 'echo $TEST'
                 echo "The head is on: ${GIT_COMMIT}"
             }
         }
