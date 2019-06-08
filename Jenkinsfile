@@ -55,8 +55,15 @@ pipeline {
         }
         stage('Docker deploy'){
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                      sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
+                script {
+                    if(env.BRANCH_NAME.equals("master")) {
+
+                    }
+                    else if(env.BRANCH_NAME.equals("develop")){
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+                            sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
+                        }
+                    }
                 }
             }
         }
