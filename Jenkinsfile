@@ -16,7 +16,7 @@ pipeline {
             steps {
                 sh 'apk add composer'
                 script {
-                    if(env.COMPOSER_CACHE_FOUND == "false") {
+                    if(env.COMPOSER_CACHE_FOUND == false) {
                         echo 'Vendor cache not found, creating...'
                         sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
                         sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ./vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
