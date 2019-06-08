@@ -9,6 +9,35 @@ pipeline {
                 echo "The head is on: ${GIT_COMMIT}"
             }
         }
+        stage("Build Vendor"){
+            environment {
+                COMPOSER_CACHE_FILE = composer_cache_file_name()
+                COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
+                COMPOSER_CACHE_FOUND = composer_cache_file_exists()
+            }
+            if(env.COMPOSER_CACHE_FOUND == "false") {
+                steps {
+                   echo 'Vendor cache not found, creating...'
+                   sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
+                   sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ~/vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
+                   withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+                       sh 'scp -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
+                       sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
+                   }
+                }
+            }
+            else {
+                steps {
+                    echo 'Vendor cache found, downloading...'
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+                        sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/ .'
+                    }
+                    sh 'mkdir vendor'
+                    sh 'tar -zxf --strip=1 $COMPOSER_VENDOR_CACHE_FILE -C vendor'
+                    sh 'rm $COMPOSER_VENDOR_CACHE_FILE'
+                }
+            }
+        }
         stage('Build PHP container'){
             environment {
                 COMPOSER_CACHE_FILE = composer_cache_file_name()
@@ -18,24 +47,6 @@ pipeline {
                 DOCKERFILE_URL = "docker/php/Dockerfile"
             }
             steps {
-                if(env.COMPOSER_CACHE_FOUND == "false") {
-                    echo 'Vendor cache not found, creating...'
-                    sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
-                    sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ~/vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                        sh 'scp -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
-                        sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
-                    }
-                }
-                else {
-                    echo 'Vendor cache found, downloading...'
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                        sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/ .'
-                    }
-                    sh 'mkdir vendor'
-                    sh 'tar -zxf --strip=1 $COMPOSER_VENDOR_CACHE_FILE -C vendor'
-                    sh 'rm $COMPOSER_VENDOR_CACHE_FILE'
-                }
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
                    sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
                 }
