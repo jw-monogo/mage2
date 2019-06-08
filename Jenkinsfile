@@ -42,7 +42,7 @@ def composer_cache_file_name() {
 
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script : 'echo composer-logicvapes_uk_dev_backend-$(find composer.lock -type f | md5sum | awk \'{print $1}').tar.gz\', returnStdout: true).trim()
+            return sh(script : 'echo composer-logicvapes_uk_dev_backend-$(find composer.lock -type f | md5sum | awk \'{print $1}\').tar.gz', returnStdout: true).trim()
         }
     }
 }
