@@ -42,7 +42,7 @@ def composer_cache_file_name() {
 
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script : 'ssh $SSH_TESLA_HOST -i $SSH_KEY echo "test"', returnStdout: true).trim()
+            return sh(script : 'echo composer-logicvapes_uk_dev_backend-$(find composer.lock -type f | md5sum | awk '${print $1}').tar.gz', returnStdout: true).trim()
         }
     }
 }
@@ -51,7 +51,7 @@ def composer_cache_file_exists() {
 
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/composer-logicvapes_uk_dev_backend-$COMPOSER_CACHE_FILE.tar.gz" && echo true || echo false', , returnStdout: true).trim()
+            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$COMPOSER_CACHE_FILE" && echo true || echo false', , returnStdout: true).trim()
         }
     }
 }
