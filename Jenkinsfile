@@ -6,7 +6,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage("Checkout"){
+        stage("Setenv"){
             environment {
                 TAG = sh (
                   returnStdout: true,
@@ -14,7 +14,7 @@ pipeline {
                 ).trim()
             }
             steps {
-                echo ${TAG}
+                echo "${TAG}"
             }
         }
         stage('Build Docker php'){
