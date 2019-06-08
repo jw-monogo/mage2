@@ -88,7 +88,7 @@ def composer_cache_file_exists() {
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
             sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$(echo $COMPOSER_CACHE_FILE)" && echo true || echo false'
-            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/$(echo $COMPOSER_CACHE_FILE)" && echo true || echo false', returnStdout: true).trim()
+            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f "/mnt/storage/cache/${env.COMPOSER_CACHE_FILE}" && echo true || echo false', returnStdout: true).trim()
         }
     }
 }
