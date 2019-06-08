@@ -16,6 +16,7 @@ pipeline {
                 COMPOSER_CACHE_FOUND = composer_cache_file_exists()
             }
             steps {
+                sh 'apk add composer'
                 script {
                     if(env.COMPOSER_CACHE_FOUND == "false") {
                         echo 'Vendor cache not found, creating...'
