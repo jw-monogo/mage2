@@ -8,11 +8,7 @@ pipeline {
         }
         stage("Setenv"){
             environment {
-                TAG = sh (
-                  returnStdout: true,
-                  script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
-                ).trim()
-            }
+                TAG = sh "echo $(git log -1 --pretty=%h)"
             steps {
                 echo "${env.TAG}"
             }
