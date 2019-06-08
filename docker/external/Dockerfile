@@ -51,9 +51,20 @@ COPY . /code
 
 RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
 
-COPY docker/php/www.pool.conf /etc/php7/php-fpm.d/
-COPY docker/php/memory.ini /etc/php7/conf.d/
-CMD ["php-fpm7", "-F"]
+COPY docker/external/www.pool.conf /etc/php7/php-fpm.d/
+COPY docker/external/memory.ini /etc/php7/conf.d/
+RUN rm /etc/nginx/conf.d/default.conf
+
+ADD docker/external/nginx.conf /etc/nginx/
+ADD docker/external/magento.conf /etc/nginx/conf.d/
+
+RUN adduser -D -g '' -G www-data www-data
+
+
+COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
+
 
 WORKDIR /code
 EXPOSE 9001
+
+CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf

@@ -3,10 +3,8 @@ pipeline {
     environment {
         COMPOSER_CACHE_FILE = composer_cache_file_name()
         COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
-        DOCKER_NGINX_IMAGE = "lv_uk_dev/backend_nginx"
-        DOCKER_PHP_IMAGE = "lv_uk_dev/backend_php"
-        DOCKERFILE_PHP_URL = "docker/php/Dockerfile"
-        DOCKERFILE_NGINX_URL = "docker/nginx/Dockerfile"
+        DOCKER_IMAGE = "lv_uk_dev/backend"
+        DOCKERFILE_URL = "docker/external/Dockerfile"
     }
     stages {
         stage("Checkout"){
@@ -44,20 +42,12 @@ pipeline {
                 }
             }
         }
-        stage('Build PHP container'){
+        stage('Build container'){
             steps {
-                echo "Used docker image name: $DOCKER_PHP_IMAGE:$GIT_COMMIT"
-                sh 'docker build -t $DOCKER_PHP_IMAGE:$GIT_COMMIT -f $DOCKERFILE_PHP_URL --no-cache .'
-                echo "Tagging image as latest: $DOCKER_PHP_IMAGE:latest"
-                sh 'docker tag $DOCKER_PHP_IMAGE:$GIT_COMMIT $DOCKER_PHP_IMAGE:latest'
-            }
-        }
-        stage('Build nginx container'){
-            steps {
-                echo "Used docker image name: $DOCKER_NGINX_IMAGE:$GIT_COMMIT"
-                sh 'docker build -t $DOCKER_NGINX_IMAGE:$GIT_COMMIT -f $DOCKERFILE_NGINX_URL --no-cache .'
-                echo "Tagging image as latest: $DOCKER_NGINX_IMAGE:latest"
-                sh 'docker tag $DOCKER_NGINX_IMAGE:$GIT_COMMIT $DOCKER_NGINX_IMAGE:latest'
+                echo "Used docker image name: $DOCKER_IMAGE:$GIT_COMMIT"
+                sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f $DOCKERFILE_URL --no-cache .'
+                echo "Tagging image as latest: $DOCKER_IMAGE:latest"
+                sh 'docker tag $DOCKER_IMAGE:$GIT_COMMIT $DOCKER_IMAGE:latest'
             }
         }
         stage('Docker deploy'){
