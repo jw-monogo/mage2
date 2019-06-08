@@ -3,8 +3,14 @@ node {
     stage('Checkout') {
       checkout scm
     }
+    environment {
+    TAG = sh (
+      returnStdout: true,
+      script: 'git fetch --tags && git tag --points-at HEAD | awk NF'
+    ).trim()
+    }
     stage('Environment') {
-      sh "echo Used image tag: $(git log -1 --pretty=%h)"
+      echo "Deploying to Prod ${TAG}"
       sh 'export IMG_NAME=$(git log -1 --pretty=%h)'
       sh '$IMG_NAME'
       sh 'printenv'
