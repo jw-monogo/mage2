@@ -4,16 +4,16 @@ pipeline {
         stage("Checkout"){
             steps {
                 checkout scm
+                echo "Recent commit is: ${GIT_COMMIT}"
             }
         }
-        stage("Setenv"){
-            steps {
-                echo "${GIT_COMMIT}"
+        stage('Build PHP container'){
+            environment {
+                DOCKER_IMAGE = "lv_uk_dev/backend_php"
             }
-        }
-        stage('Build Docker php'){
             steps {
-                sh 'docker build -t lv_uk_dev/backend_php -f docker/php/Dockerfile --no-cache .'
+                sh 'docker build -t ${env.DOCKER_IMAGE}:$GIT_COMMIT -f docker/php/Dockerfile --no-cache .'
+                sh 'docker tag ${env.DOCKER_IMAGE}:$GIT_COMMIT ${env.DOCKER_IMAGE}:latest'
             }
         }
         stage('Docker deploy'){
