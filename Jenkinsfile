@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build PHP container'){
             environment {
-                COMPOSER_CACHE_FILE = composer_cache_file()
+                COMPOSER_CACHE_FILE = composer_cache_file_name()
                 COMPOSER_CACHE_FOUND = composer_cache_file_exists()
                 DOCKER_IMAGE = "lv_uk_dev/backend_php"
                 DOCKERFILE_URL = "docker/php/Dockerfile"
