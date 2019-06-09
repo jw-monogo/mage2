@@ -66,6 +66,7 @@ RUN adduser -D -g '' -G www-data www-data
 RUN chmod 775 /code/var -R
 RUN chmod 775 /code/app/etc -R
 RUN chmod 777 /code/generated -R
+RUN chmod 777 /code/generated/.* -R
 RUN chmod 775 /code/pub/media -R
 RUN chmod 775 /code/pub/static -R
 RUN chown www-data:www-data /code/var -R
