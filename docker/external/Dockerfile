@@ -49,31 +49,18 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
     apk del tzdata && \
     date
 
+RUN adduser -D -g '' -G www-data www-data
 RUN mkdir /code
-COPY . /code
 
-RUN rm -rf /code/docker && rm -rf Dockerfile && rm -rf Jenkinsfile
+COPY --chown=www-data:www-data . /code
 
+RUN rm -rf /code/docker
 COPY docker/external/www.pool.conf /etc/php7/php-fpm.d/
 COPY docker/external/memory.ini /etc/php7/conf.d/
 RUN rm /etc/nginx/conf.d/default.conf
 
 ADD docker/external/nginx.conf /etc/nginx/
 ADD docker/external/magento.conf /etc/nginx/conf.d/
-
-RUN adduser -D -g '' -G www-data www-data
-
-RUN chown www-data:www-data /code/var -R
-RUN chown www-data:www-data /code/app/etc -R
-RUN chown www-data:www-data /code/generated -R
-RUN chown www-data:www-data /code/pub -R
-RUN chmod 775 /code/var -R
-RUN chmod 775 /code/app/etc -R
-RUN chmod 777 /code/generated -R
-RUN chmod 775 /code/pub/media -R
-RUN chmod 775 /code/pub/static -R
-
-#RUN find /code/app/code /code/var/view_preprocessed /code/vendor /code/pub/static /code/app/etc /code/generated/code /code/generated/metadata \( -type f -or -type d \) -exec chmod u-w {} + && chmod o-rwx app/etc/env.php && chmod u+x bin/magento
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
