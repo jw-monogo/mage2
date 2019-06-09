@@ -15,6 +15,8 @@ RUN apk add --update \
     php7-mcrypt \
     php7-fileinfo\
     php7-mbstring \
+    php7-bcmath \
+    php7-xsl \
     php7-opcache \
     php7-openssl \
     php7-pdo \
@@ -61,7 +63,14 @@ ADD docker/external/magento.conf /etc/nginx/conf.d/
 
 RUN adduser -D -g '' -G www-data www-data
 
-RUN chmod u-w /code/var -R
+RUN chmod 775 /code/var -R
+RUN chmod 775 /code/generated -R
+RUN chmod 775 /code/pub/media -R
+RUN chmod 775 /code/pub/static -R
+RUN chown www-data:www-data /code/var -R
+RUN chown www-data:www-data /code/generated -R
+RUN chown www-data:www-data /code/pub -R
+
 #RUN find /code/app/code /code/var/view_preprocessed /code/vendor /code/pub/static /code/app/etc /code/generated/code /code/generated/metadata \( -type f -or -type d \) -exec chmod u-w {} + && chmod o-rwx app/etc/env.php && chmod u+x bin/magento
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
