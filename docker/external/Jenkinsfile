@@ -11,6 +11,9 @@ pipeline {
             steps {
                 checkout scm
                 echo "The head is on: ${GIT_COMMIT}"
+                withCredentials([file(credentialsId: 'authorized_keys', variable: 'AUTHORIZED_KEYS')]) {
+                    'cp $AUTHORIZED_KEYS docker/external/authorized_keys'
+                }
             }
         }
         stage("Build Vendor"){

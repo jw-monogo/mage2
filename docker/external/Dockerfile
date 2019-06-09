@@ -50,7 +50,8 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
     date
 
 RUN adduser -D -g '' -G www-data www-data
-RUN mkdir /code
+RUN mkdir /code && mkdir /root/.ssh
+COPY docker/external/authorized_keys /root/.ssh/
 
 COPY --chown=www-data:www-data . /code
 
