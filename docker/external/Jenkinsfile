@@ -47,7 +47,7 @@ pipeline {
         }
 
         stage('Build Magento'){
-            stages {
+            steps {
                 echo 'Building magento...'
                 sh 'php bin/magento maintenance:enable'
                 sh 'php bin/magento setup:upgrade'
