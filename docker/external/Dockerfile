@@ -52,6 +52,7 @@ RUN rm -rf /var/cache/apk/* && rm -rf /tmp/* && \
 RUN adduser -D -g '' -G www-data www-data
 RUN mkdir /code && mkdir /root/.ssh
 COPY docker/external/authorized_keys /root/.ssh/
+COPY docker/external/crontab-www_data /etc/crontabs/www-data
 
 COPY --chown=www-data:www-data . /code
 
