@@ -57,7 +57,7 @@ pipeline {
                 }
                 sh 'sed -i \'s/memory_limit = 128M/memory_limit = 1024M/g\' /etc/php7/php.ini'
                 sh 'php bin/magento maintenance:enable'
-                sh 'php bin/magento setup:install'
+                sh 'php bin/magento setup:upgrade'
                 sh 'php bin/magento setup:di:compile'
                 sh 'composer dump-autoload -o --apcu'
                 sh 'php bin/magento setup:static-content:deploy -f'
