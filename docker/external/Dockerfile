@@ -65,6 +65,11 @@ ADD docker/external/magento.conf /etc/nginx/conf.d/
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
+RUN php bin/magento setup:install
+RUN php bin/magento setup:di:compile
+RUN composer dump-autoload -o --apcu
+RUN php bin/magento setup:static-content:deploy
+RUN php bin/magento maintenance:disable
 
 WORKDIR /code
 EXPOSE 80
