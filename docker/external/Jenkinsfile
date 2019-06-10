@@ -56,7 +56,7 @@ pipeline {
                     sh 'scp -o StrictHostKeyChecking=no -r -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/media pub/media/'
                 }
                 sh 'php bin/magento maintenance:enable'
-                sh 'php bin/magento setup:upgrade'
+                sh 'php bin/magento setup:install'
                 sh 'php bin/magento setup:di:compile'
                 sh 'composer dump-autoload -o --apcu'
                 sh 'php bin/magento setup:static-content:deploy'
