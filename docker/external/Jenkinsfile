@@ -11,13 +11,13 @@ pipeline {
         stage("Checkout"){
             steps {
                 checkout scm
-                echo "The head is on: ${GIT_COMMIT}"
-                withCredentials([file(credentialsId: 'authorized_keys', variable: 'AUTHORIZED_KEYS')]) {
-                    sh 'cp $AUTHORIZED_KEYS docker/external/authorized_keys'
-                }
                 echo "Fetch docker images..."
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
                     sh 'git clone --single-branch --branch $JENKINS_BRANCH git@bitbucket.org:monogo/monogo-jenkins-magento.git docker'
+                }
+                echo "The head is on: ${GIT_COMMIT}"
+                withCredentials([file(credentialsId: 'authorized_keys', variable: 'AUTHORIZED_KEYS')]) {
+                    sh 'cp $AUTHORIZED_KEYS docker/external/authorized_keys'
                 }
             }
         }
