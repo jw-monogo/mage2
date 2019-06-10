@@ -28,15 +28,15 @@ pipeline {
                         sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
                         sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ./vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                           sh 'scp -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
-                           sh 'scp -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
+                           sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
+                           sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
                         }
                         sh 'rm $COMPOSER_VENDOR_CACHE_FILE && rm $COMPOSER_CACHE_FILE'
                     }
                     else {
                         echo 'Vendor cache found, downloading...'
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                            sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
+                            sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
                         }
                         sh 'mkdir -p vendor'
                         sh 'tar --strip=1 -zxf $COMPOSER_VENDOR_CACHE_FILE'
@@ -51,12 +51,12 @@ pipeline {
                 echo 'Building magento...'
                 sh 'apk add php7-fpm php7-apcu php7-ctype php7-curl php7-dom php7-gd php7-iconv php7-imagick php7-json php7-intl php7-ldap php7-mcrypt php7-fileinfo php7-mbstring php7-bcmath php7-xsl php7-opcache php7-openssl php7-pdo php7-pdo_mysql php7-mysqli php7-xml php7-zlib php7-phar php7-tokenizer php7-session php7-simplexml php7-xdebug php7-zip php7-xmlreader php7-xmlwriter php7-soap php7-calendar php7-xdebug'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                    sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/env.php'
-                    sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/config.php'
-                    sh 'scp -r -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/media pub/media/'
+                    sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/env.php'
+                    sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/config.php'
+                    sh 'scp -o StrictHostKeyChecking=no -r -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/media pub/media/'
                 }
                 sh 'php bin/magento maintenance:enable'
-                sh 'php bin/magento setup:install'
+                sh 'php bin/magento setup:upgrade'
                 sh 'php bin/magento setup:di:compile'
                 sh 'composer dump-autoload -o --apcu'
                 sh 'php bin/magento setup:static-content:deploy'
@@ -80,7 +80,7 @@ pipeline {
                     }
                     else if(env.BRANCH_NAME.equals("develop")){
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                            sh 'ssh $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
+                            sh 'ssh -o StrictHostKeyChecking=no $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
                         }
                     }
                 }
@@ -115,7 +115,7 @@ def composer_vendor_cache_file_name() {
 def composer_cache_file_exists() {
     script {
         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script: 'ssh $SSH_TESLA_HOST -i $SSH_KEY test -f /mnt/storage/cache/$COMPOSER_CACHE_FILE && echo true || echo false', returnStdout: true).trim()
+            return sh(script: 'ssh -o StrictHostKeyChecking=no $SSH_TESLA_HOST -i $SSH_KEY test -f /mnt/storage/cache/$COMPOSER_CACHE_FILE && echo true || echo false', returnStdout: true).trim()
         }
     }
 }
