@@ -63,7 +63,6 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 ADD docker/external/nginx.conf /etc/nginx/
 ADD docker/external/magento.conf /etc/nginx/conf.d/
-RUN php /code/bin/magento cron:install
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
