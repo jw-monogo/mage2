@@ -65,6 +65,8 @@ ADD docker/external/magento.conf /etc/nginx/conf.d/
 
 COPY /docker/external/supervisord.conf /etc/supervisor/supervisord.conf
 
+RUN chmod 644 /code/app/etc -R
+RUN php code/bin/magento maintenance:enable
 RUN php code/bin/magento setup:install
 RUN php code/bin/magento setup:di:compile
 RUN composer dump-autoload -o --apcu
