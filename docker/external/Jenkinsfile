@@ -49,7 +49,7 @@ pipeline {
         stage('Build Magento'){
             steps {
                 echo 'Building magento...'
-                sh 'php bin/magento setup:upgrade'
+                sh 'php bin/magento setup:install'
                 sh 'php bin/magento setup:di:compile'
                 sh 'composer dump-autoload -o --apcu'
                 sh 'php bin/magento setup:static-content:deploy'
