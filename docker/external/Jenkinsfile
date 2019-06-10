@@ -45,6 +45,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Magento'){
+            steps {
+                echo 'Building magento...'
+                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
+                    sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/env.php'
+                    sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/config.php'
+                    sh 'scp -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/media pub/media/ -r'
+                }
+                sh 'php bin/magento maintenance:enable'
+                sh 'php bin/magento setup:install'
+                sh 'php bin/magento setup:di:compile'
+                sh 'composer dump-autoload -o --apcu'
+                sh 'php bin/magento setup:static-content:deploy'
+                sh 'php bin/magento maintenance:disable'
+            }
+        }
+
         stage('Build container'){
             steps {
                 echo "Used docker image name: $DOCKER_IMAGE:$GIT_COMMIT"
