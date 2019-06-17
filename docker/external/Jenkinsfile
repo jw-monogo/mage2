@@ -1,127 +1,20 @@
 pipeline {
     agent any
-    environment {
-        COMPOSER_CACHE_FILE = composer_cache_file_name()
-        COMPOSER_VENDOR_CACHE_FILE = composer_vendor_cache_file_name()
-        DOCKER_IMAGE = "lv_uk_dev/backend"
-        JENKINS_BRANCH = 'logicvapes-eu-uk-m2-dev'
-        DOCKERFILE_URL = "docker/external/Dockerfile"
-    }
     stages {
         stage("Checkout"){
             steps {
                 checkout scm
-                echo "Fetch docker images..."
-                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                    sh 'git clone --single-branch --branch $JENKINS_BRANCH git@bitbucket.org:monogo/monogo-jenkins-magento.git docker'
-                }
-                echo "The head is on: ${GIT_COMMIT}"
-                withCredentials([file(credentialsId: 'authorized_keys', variable: 'AUTHORIZED_KEYS')]) {
-                    sh 'cp $AUTHORIZED_KEYS docker/external/authorized_keys'
-                }
-            }
-        }
-        stage("Build Vendor"){
-            environment {
-                COMPOSER_CACHE_FOUND = composer_cache_file_exists()
-            }
-            steps {
-                sh 'apk add composer'
-                script {
-                    if(env.COMPOSER_CACHE_FOUND.equals("false")) {
-                        echo 'Vendor cache not found, creating...'
-                        sh 'composer install --no-interaction --no-suggest --ignore-platform-reqs'
-                        sh 'tar -zcf $COMPOSER_VENDOR_CACHE_FILE ./vendor && tar -zcf $COMPOSER_CACHE_FILE ~/.composer/cache'
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                           sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $COMPOSER_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
-                           sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $COMPOSER_VENDOR_CACHE_FILE $SSH_TESLA_HOST:/mnt/storage/cache/'
-                        }
-                        sh 'rm $COMPOSER_VENDOR_CACHE_FILE && rm $COMPOSER_CACHE_FILE'
-                    }
-                    else {
-                        echo 'Vendor cache found, downloading...'
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                            sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/cache/$COMPOSER_VENDOR_CACHE_FILE .'
-                        }
-                        sh 'mkdir -p vendor'
-                        sh 'tar --strip=1 -zxf $COMPOSER_VENDOR_CACHE_FILE'
-                        sh 'rm $COMPOSER_VENDOR_CACHE_FILE'
-                    }
-                }
+
             }
         }
 
-        stage('Build Magento'){
-            steps {
-                echo 'Building magento...'
-                sh 'apk add php7-fpm php7-apcu php7-ctype php7-curl php7-dom php7-gd php7-iconv php7-imagick php7-json php7-intl php7-ldap php7-mcrypt php7-fileinfo php7-mbstring php7-bcmath php7-xsl php7-opcache php7-openssl php7-pdo php7-pdo_mysql php7-mysqli php7-xml php7-zlib php7-phar php7-tokenizer php7-session php7-simplexml php7-xdebug php7-zip php7-xmlreader php7-xmlwriter php7-soap php7-calendar php7-xdebug'
-                withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                    sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/env.php app/etc/env.php'
-                    sh 'scp -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/config.php app/etc/config.php'
-                    sh 'scp -o StrictHostKeyChecking=no -r -i $SSH_KEY $SSH_TESLA_HOST:/mnt/storage/static/logicvapes-uk-backend-dev.monogo.dev/media pub/media/'
-                }
-                sh 'sed -i \'s/memory_limit = 128M/memory_limit = 1024M/g\' /etc/php7/php.ini'
-                sh 'php bin/magento maintenance:enable'
-                sh 'php bin/magento setup:upgrade'
-                sh 'php bin/magento setup:di:compile'
-                sh 'composer dump-autoload -o --apcu'
-                sh 'php bin/magento setup:static-content:deploy -f'
-                sh 'php bin/magento maintenance:disable'
-            }
-        }
-
-        stage('Build container'){
-            steps {
-                echo "Used docker image name: $DOCKER_IMAGE:$GIT_COMMIT"
-                sh 'docker build -t $DOCKER_IMAGE:$GIT_COMMIT -f $DOCKERFILE_URL --no-cache .'
-                echo "Tagging image as latest: $DOCKER_IMAGE:latest"
-                sh 'docker tag $DOCKER_IMAGE:$GIT_COMMIT $DOCKER_IMAGE:latest'
-            }
-        }
-        stage('Docker deploy'){
-            steps {
-                script {
-                    if(env.BRANCH_NAME.equals("master")) {
-
-                    }
-                    else if(env.BRANCH_NAME.equals("develop")){
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-                            sh 'ssh -o StrictHostKeyChecking=no $SSH_TESLA_HOST -i $SSH_KEY docker-compose -f /mnt/storage/containers/logicvapes/uk/dev/docker-compose.yml up -d --build'
-                        }
-                    }
-                }
-            }
-        }
-        stage('Cleanup'){
-            steps {
-                sh 'docker system prune --all --force'
-            }
-        }
     }
-}
-
-def composer_cache_file_name() {
-
-    script {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script : 'echo composer-logicvapes_uk_dev_backend-$(find composer.lock -type f | md5sum | awk \'{print $1}\').tar.gz', returnStdout: true).trim()
+    post {
+        failure {
+            chat 'AAAA0aio1tI'
         }
-    }
-}
-
-def composer_vendor_cache_file_name() {
-
-    script {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script : 'echo composer-logicvapes_uk_dev_backend-vendor-$(find composer.lock -type f | md5sum | awk \'{print $1}\').tar.gz', returnStdout: true).trim()
-        }
-    }
-}
-
-def composer_cache_file_exists() {
-    script {
-        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-monogo-tesla', keyFileVariable: 'SSH_KEY')]) {
-            return sh(script: 'ssh -o StrictHostKeyChecking=no $SSH_TESLA_HOST -i $SSH_KEY test -f /mnt/storage/cache/$COMPOSER_CACHE_FILE && echo true || echo false', returnStdout: true).trim()
+        success {
+            chat 'AAAA0aio1tI'
         }
     }
 }
